@@ -35,11 +35,17 @@ export default function Model(props: any) {
   const skeleton = nodes?.Object_7?.skeleton;
   const bones = skeleton?.bones;
   const leftUpperArm = bones?.[9];
+  const leftElbow = bones?.[10];
 
   useFrame((state, delta) => {
     if (leftUpperArm) {
       leftUpperArm.rotation.y =
         ((-angles["right_shoulder-left_shoulder-left_elbow"] + 180) * Math.PI) /
+        180;
+    }
+    if (leftElbow) {
+      leftElbow.rotation.y =
+        ((-angles["left_shoulder-left_elbow-left_wrist"] + 180) * Math.PI) /
         180;
     }
   });
