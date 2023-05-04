@@ -1,7 +1,6 @@
-import { useAnimations, useGLTF } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useEffect, useRef, useState } from "react";
-import { MathUtils, Vector2, Vector3 } from "three";
+import { useRef } from "react";
 
 const posenetPartIndex = {
   nose: 0,
@@ -34,10 +33,17 @@ export default function Model(props: any) {
 
   const skeleton = nodes?.Object_7?.skeleton;
   const bones = skeleton?.bones;
+  console.log({ bones });
   const leftUpperArm = bones?.[9];
   const leftElbow = bones?.[10];
   const rightUpperArm = bones?.[19];
   const rightElbow = bones?.[20];
+
+  const leftThigh = bones?.[28];
+  const rightThigh = bones?.[33];
+
+  const leftCalf = bones?.[29];
+  const rightCalf = bones?.[34];
 
   useFrame((state, delta) => {
     if (leftUpperArm) {
@@ -60,6 +66,23 @@ export default function Model(props: any) {
       rightElbow.rotation.y =
         ((-angles["right_shoulder-right_elbow-right_wrist"] + 180) * Math.PI) /
         180;
+    }
+    if (leftThigh) {
+      leftThigh.rotation.y =
+        ((-angles["left_shoulder-left_hip-left_knee"] + 180) * Math.PI) / 180;
+    }
+    if (rightThigh) {
+      rightThigh.rotation.y =
+        ((-angles["right_shoulder-right_hip-right_knee"] + 180) * Math.PI) /
+        180;
+    }
+    if (leftCalf) {
+      leftCalf.rotation.y =
+        ((angles["left_hip-left_knee-left_ankle"] + 180) * Math.PI) / 180;
+    }
+    if (rightCalf) {
+      rightCalf.rotation.y =
+        ((angles["right_hip-right_knee-right_ankle"] + 180) * Math.PI) / 180;
     }
   });
 

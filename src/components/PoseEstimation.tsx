@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import * as tf from "@tensorflow/tfjs-core";
 import * as poseDetection from "@tensorflow-models/pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
+import * as tf from "@tensorflow/tfjs-core";
+import { useEffect, useMemo, useRef } from "react";
 import Webcam from "react-webcam";
 import { partIndices } from "../constants";
 
@@ -13,6 +13,12 @@ partSet.add("right_shoulder-left_shoulder-left_elbow");
 
 partSet.add("right_shoulder-right_elbow-right_wrist");
 partSet.add("left_shoulder-right_shoulder-right_elbow");
+
+partSet.add("left_shoulder-left_hip-left_knee");
+partSet.add("right_shoulder-right_hip-right_knee");
+
+partSet.add("left_hip-left_knee-left_ankle");
+partSet.add("right_hip-right_knee-right_ankle");
 
 // partSet.add("rightShoulder-rightElbow-rightWrist");
 // partSet.add("right_elbow-right_");
