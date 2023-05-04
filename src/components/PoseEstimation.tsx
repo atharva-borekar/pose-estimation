@@ -11,6 +11,9 @@ let partSet = new Set();
 partSet.add("left_shoulder-left_elbow-left_wrist");
 partSet.add("right_shoulder-left_shoulder-left_elbow");
 
+partSet.add("right_shoulder-right_elbow-right_wrist");
+partSet.add("left_shoulder-right_shoulder-right_elbow");
+
 // partSet.add("rightShoulder-rightElbow-rightWrist");
 // partSet.add("right_elbow-right_");
 
