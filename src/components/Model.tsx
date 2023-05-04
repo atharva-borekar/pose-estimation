@@ -1,6 +1,7 @@
 import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
+import { partSet } from "./PoseEstimation";
 
 const posenetPartIndex = {
   nose: 0,
@@ -22,18 +23,43 @@ const posenetPartIndex = {
   rightAnkle: 16,
 };
 
+const arr: Array<string> = [...partSet];
+const initialValues: Array<number> = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+const anglesHistory: any = {};
+arr.map((e: string) => {
+  anglesHistory[e] = [...initialValues];
+  return null;
+});
+
+const updateAngles = (angles: any) => {
+  angles &&
+    Object.entries(angles)?.map(([key, value]: any) => {
+      if (anglesHistory[key]?.length > 10) anglesHistory?.[key]?.shift();
+      anglesHistory?.[key]?.push(value);
+      return null;
+    });
+};
+
+const getAverage = (angleElement: string) => {
+  const sum = anglesHistory?.[angleElement]?.reduce(
+    (a: number, b: number) => a + b,
+    0
+  );
+  const avg = sum / anglesHistory?.[angleElement]?.length;
+  return avg;
+};
+
 export default function Model(props: any) {
   const { pose, angles, setAngles } = props;
 
-  //   console.log({ pose });
   const group = useRef<any>();
   const { nodes, materials, animations, scene } = useGLTF(
     "/low_poly_humanoid_robot.glb"
   ) as any;
 
+  updateAngles(angles);
   const skeleton = nodes?.Object_7?.skeleton;
   const bones = skeleton?.bones;
-  console.log({ bones });
   const leftUpperArm = bones?.[9];
   const leftElbow = bones?.[10];
   const rightUpperArm = bones?.[19];
@@ -44,45 +70,61 @@ export default function Model(props: any) {
 
   const leftCalf = bones?.[29];
   const rightCalf = bones?.[34];
+  const leftHand = bones?.[11];
+  const rightHand = bones?.[21];
 
   useFrame((state, delta) => {
     if (leftUpperArm) {
       leftUpperArm.rotation.y =
-        ((-angles["right_shoulder-left_shoulder-left_elbow"] + 180) * Math.PI) /
+        ((-getAverage("right_shoulder-left_shoulder-left_elbow") + 180) *
+          Math.PI) /
         180;
     }
     if (leftElbow) {
       leftElbow.rotation.y =
-        ((-angles["left_shoulder-left_elbow-left_wrist"] + 180) * Math.PI) /
+        ((-getAverage("left_shoulder-left_elbow-left_wrist") + 180) * Math.PI) /
         180;
     }
     if (rightUpperArm) {
       rightUpperArm.rotation.y =
-        ((-angles["left_shoulder-right_shoulder-right_elbow"] + 180) *
+        ((-getAverage("left_shoulder-right_shoulder-right_elbow") + 180) *
           Math.PI) /
         180;
     }
     if (rightElbow) {
       rightElbow.rotation.y =
-        ((-angles["right_shoulder-right_elbow-right_wrist"] + 180) * Math.PI) /
+        ((-getAverage("right_shoulder-right_elbow-right_wrist") + 180) *
+          Math.PI) /
         180;
     }
     if (leftThigh) {
       leftThigh.rotation.y =
-        ((-angles["left_shoulder-left_hip-left_knee"] + 180) * Math.PI) / 180;
+        ((-getAverage("left_shoulder-left_hip-left_knee") + 180) * Math.PI) /
+        180;
     }
     if (rightThigh) {
       rightThigh.rotation.y =
-        ((-angles["right_shoulder-right_hip-right_knee"] + 180) * Math.PI) /
+        ((-getAverage("right_shoulder-right_hip-right_knee") + 180) * Math.PI) /
         180;
     }
     if (leftCalf) {
       leftCalf.rotation.y =
-        ((angles["left_hip-left_knee-left_ankle"] + 180) * Math.PI) / 180;
+        ((getAverage("left_hip-left_knee-left_ankle") + 180) * Math.PI) / 180;
     }
     if (rightCalf) {
       rightCalf.rotation.y =
-        ((angles["right_hip-right_knee-right_ankle"] + 180) * Math.PI) / 180;
+        ((getAverage("right_hip-right_knee-right_ankle") + 180) * Math.PI) /
+        180;
+    }
+    if (leftHand) {
+      leftHand.rotation.z =
+        (-(getAverage("left_elbow-left_wrist-left_index") + 180) * Math.PI) /
+        180;
+    }
+    if (rightHand) {
+      rightHand.rotation.z =
+        ((getAverage("right_elbow-right_wrist-right_index") + 180) * Math.PI) /
+        180;
     }
   });
 

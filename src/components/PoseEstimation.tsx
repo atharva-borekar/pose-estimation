@@ -7,7 +7,7 @@ import { partIndices } from "../constants";
 
 tf.setBackend("webgl");
 
-let partSet = new Set();
+let partSet = new Set<string>();
 partSet.add("left_shoulder-left_elbow-left_wrist");
 partSet.add("right_shoulder-left_shoulder-left_elbow");
 
@@ -20,8 +20,9 @@ partSet.add("right_shoulder-right_hip-right_knee");
 partSet.add("left_hip-left_knee-left_ankle");
 partSet.add("right_hip-right_knee-right_ankle");
 
-// partSet.add("rightShoulder-rightElbow-rightWrist");
-// partSet.add("right_elbow-right_");
+partSet.add("left_elbow-left_wrist-left_index");
+partSet.add("right_elbow-right_wrist-right_index");
+export { partSet };
 
 const partIndexes = Object.keys(partIndices);
 function getAngles(pose: any) {
@@ -104,7 +105,7 @@ const PoseEstimationComponent = (props: any) => {
   const runModel = async () => {
     setInterval(() => {
       detect(detector);
-    }, 50);
+    }, 10);
   };
   const drawKeypoints = (keypoints: any, ctx: any) => {
     for (let i = 0; i < keypoints?.length; i++) {

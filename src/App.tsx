@@ -1,14 +1,14 @@
-import React, { useRef, useState } from "react";
+import { useState } from "react";
 import "./App.css";
-import PoseEstimationComponent from "./components/PoseEstimation";
 // import Scene from "./components/Scene";
-import { Col, Row } from "react-bootstrap";
+import { Row } from "react-bootstrap";
+import PoseEstimationComponent from "./components/PoseEstimation";
 import Scene from "./components/Scene";
 
 function App() {
   const [pose, setPose] = useState<any>(null);
   const [angles, setAngles] = useState<any>({});
-  console.log({ angles });
+
   return (
     <div className="App">
       <Row className="d-flex flex-1">
