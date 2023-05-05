@@ -1,7 +1,7 @@
 import * as poseDetection from "@tensorflow-models/pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
 import * as tf from "@tensorflow/tfjs-core";
-import { useEffect, useMemo, useRef, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import Webcam from "react-webcam";
 import { partIndices } from "../constants";
 import "./poseEstimation.scss";
@@ -24,11 +24,23 @@ partSet.add("right_hip-right_knee-right_ankle");
 partSet.add("left_elbow-left_wrist-left_index");
 partSet.add("right_elbow-right_wrist-right_index");
 
-partSet.add("pelvis");
+partSet.add("pelvis-xy");
+partSet.add("pelvis-yz");
+partSet.add("pelvis-zx");
 export { partSet };
 
-const getDirectAngle = (start: any, end: any) =>
-  (Math.atan2(start?.y - end?.y, start?.x - end?.x) * 180) / Math.PI;
+const getDirectAngle = (
+  start: any,
+  end: any,
+  firstAxis: string,
+  secondAxis: string
+) =>
+  (Math.atan2(
+    start?.[firstAxis] - end?.[firstAxis],
+    start?.[secondAxis] - end?.[secondAxis]
+  ) *
+    180) /
+  Math.PI;
 
 const partIndexes = Object.keys(partIndices);
 function getAngles(pose: any) {
@@ -53,11 +65,13 @@ function getAngles(pose: any) {
       }
     }
   }
-  if (partSet.has("pelvis")) {
-    const leftHipPose = pose?.keypoints?.[23];
-    const rightHipPose = pose?.keypoints?.[24];
+  if (partSet.has("pelvis-xy")) {
+    const leftShoulder = pose?.keypoints3D?.[11];
+    const rightShoulder = pose?.keypoints3D?.[12];
 
-    angles["pelvis"] = getDirectAngle(leftHipPose, rightHipPose);
+    angles["pelvis-xy"] = getDirectAngle(leftShoulder, rightShoulder, "x", "y");
+    angles["pelvis-yz"] = getDirectAngle(leftShoulder, rightShoulder, "y", "z");
+    angles["pelvis-zx"] = getDirectAngle(leftShoulder, rightShoulder, "z", "x");
   }
 
   return angles;
