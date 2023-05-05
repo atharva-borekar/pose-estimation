@@ -1,9 +1,10 @@
 import * as poseDetection from "@tensorflow-models/pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
 import * as tf from "@tensorflow/tfjs-core";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useCallback } from "react";
 import Webcam from "react-webcam";
 import { partIndices } from "../constants";
+import "./poseEstimation.scss";
 
 tf.setBackend("webgl");
 
@@ -97,46 +98,12 @@ const getModel = async () => {
 };
 
 const PoseEstimationComponent = (props: any) => {
-  const { pose, setPose, setAngles } = props;
+  const { setPose, setAngles } = props;
   const webcamRef = useRef<any>(null);
   const canvasRef = useRef<any>(null);
 
   const detector = useMemo(async () => await getModel(), []);
-  const runModel = async () => {
-    setInterval(() => {
-      detect(detector);
-    }, 10);
-  };
-  const drawKeypoints = (keypoints: any, ctx: any) => {
-    for (let i = 0; i < keypoints?.length; i++) {
-      const keypoint = keypoints?.[i];
-      const { y, x } = keypoint;
-      ctx.beginPath();
-      ctx.arc(x, y, 5, 0, 2 * Math.PI);
-      ctx.fillStyle = "blue";
-      ctx.fill();
-    }
-    drawLines(
-      [
-        [partIndices.right_wrist, partIndices.right_elbow],
-        [partIndices.right_elbow, partIndices.right_shoulder],
-        [partIndices.right_shoulder, partIndices.left_shoulder],
-        [partIndices.left_shoulder, partIndices.left_elbow],
-        [partIndices.left_elbow, partIndices.left_wrist],
-        [partIndices.right_shoulder, partIndices.right_hip],
-        [partIndices.left_shoulder, partIndices.left_hip],
-        [partIndices.right_hip, partIndices.left_hip],
-        [partIndices.right_hip, partIndices.right_knee],
-        [partIndices.left_hip, partIndices.left_knee],
-        [partIndices.right_knee, partIndices.right_ankle],
-        [partIndices.left_knee, partIndices.left_ankle],
-      ],
-      keypoints,
-      ctx
-    );
-  };
-
-  const drawLines = (linePairs: any, keypoints: any, ctx: any) => {
+  const drawLines = useCallback((linePairs: any, keypoints: any, ctx: any) => {
     linePairs.forEach(([start, end]: any) => {
       const startKeypoint = keypoints[start];
       const endKeypoint = keypoints[end];
@@ -147,45 +114,83 @@ const PoseEstimationComponent = (props: any) => {
       ctx.strokeStyle = "red";
       ctx.stroke();
     });
-  };
+  }, []);
+  const drawKeypoints = useCallback(
+    (keypoints: any, ctx: any) => {
+      for (let i = 0; i < keypoints?.length; i++) {
+        const keypoint = keypoints?.[i];
+        const { y, x } = keypoint;
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = "blue";
+        ctx.fill();
+      }
+      drawLines(
+        [
+          [partIndices.right_wrist, partIndices.right_elbow],
+          [partIndices.right_elbow, partIndices.right_shoulder],
+          [partIndices.right_shoulder, partIndices.left_shoulder],
+          [partIndices.left_shoulder, partIndices.left_elbow],
+          [partIndices.left_elbow, partIndices.left_wrist],
+          [partIndices.right_shoulder, partIndices.right_hip],
+          [partIndices.left_shoulder, partIndices.left_hip],
+          [partIndices.right_hip, partIndices.left_hip],
+          [partIndices.right_hip, partIndices.right_knee],
+          [partIndices.left_hip, partIndices.left_knee],
+          [partIndices.right_knee, partIndices.right_ankle],
+          [partIndices.left_knee, partIndices.left_ankle],
+        ],
+        keypoints,
+        ctx
+      );
+    },
+    [drawLines]
+  );
+  const detect = useCallback(
+    async (net: any) => {
+      if (
+        typeof webcamRef.current !== "undefined" &&
+        webcamRef.current !== null &&
+        webcamRef.current.video.readyState === 4
+      ) {
+        const video = webcamRef.current.video;
+        const videoWidth = webcamRef.current.video.videoWidth;
+        const videoHeight = webcamRef.current.video.videoHeight;
 
-  const detect = async (net: any) => {
-    if (
-      typeof webcamRef.current !== "undefined" &&
-      webcamRef.current !== null &&
-      webcamRef.current.video.readyState === 4
-    ) {
-      const video = webcamRef.current.video;
-      const videoWidth = webcamRef.current.video.videoWidth;
-      const videoHeight = webcamRef.current.video.videoHeight;
+        webcamRef.current.video.width = videoWidth;
+        webcamRef.current.video.height = videoHeight;
 
-      webcamRef.current.video.width = videoWidth;
-      webcamRef.current.video.height = videoHeight;
+        canvasRef.current.width = videoWidth;
+        canvasRef.current.height = videoHeight;
 
-      canvasRef.current.width = videoWidth;
-      canvasRef.current.height = videoHeight;
-
-      //detect pose here
-      const estimationConfig = { flipHorizontal: true };
-      const timestamp = performance.now();
-      const poses = await (
-        await detector
-      )?.estimatePoses(video, estimationConfig, timestamp);
-      const ctx = canvasRef.current.getContext("2d");
-      ctx.clearRect(0, 0, videoWidth, videoHeight);
-      setPose((poses as any)?.[0]);
-      const angles = getAngles((poses as any)?.[0]);
-      setAngles(angles);
-      drawKeypoints((poses as any)?.[0]?.keypoints, ctx);
-    }
-  };
+        //detect pose here
+        const estimationConfig = { flipHorizontal: true };
+        const timestamp = performance.now();
+        const poses = await (
+          await detector
+        )?.estimatePoses(video, estimationConfig, timestamp);
+        const ctx = canvasRef.current.getContext("2d");
+        ctx.clearRect(0, 0, videoWidth, videoHeight);
+        setPose((poses as any)?.[0]);
+        const angles = getAngles((poses as any)?.[0]);
+        setAngles(angles);
+        drawKeypoints((poses as any)?.[0]?.keypoints, ctx);
+      }
+    },
+    [detector, drawKeypoints, setAngles, setPose]
+  );
+  const runModel = useCallback(async () => {
+    setInterval(() => {
+      detect(detector);
+    }, 10);
+  }, [detect, detector]);
 
   useEffect(() => {
     runModel();
-  }, []);
+  }, [runModel]);
 
   return (
-    <div className="w-50">
+    <>
       <Webcam
         ref={webcamRef}
         style={{
@@ -193,14 +198,8 @@ const PoseEstimationComponent = (props: any) => {
           height: 100,
         }}
       />
-      <canvas
-        ref={canvasRef}
-        style={{
-          width: 100,
-          height: 100,
-        }}
-      />
-    </div>
+      <canvas className="canvas-element" ref={canvasRef} />
+    </>
   );
 };
 

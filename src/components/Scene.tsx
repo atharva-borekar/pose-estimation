@@ -9,7 +9,7 @@ const Scene = (props: any) => {
     <div id="canvas-container">
       <Canvas
         style={{
-          height: "100vh",
+          height: "98vh",
           background: "#171717",
         }}
         camera={{ position: [0, 0, 20] }}

@@ -3,26 +3,6 @@ import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import { partSet } from "./PoseEstimation";
 
-const posenetPartIndex = {
-  nose: 0,
-  leftEye: 1,
-  rightEye: 2,
-  leftEar: 3,
-  rightEar: 4,
-  leftShoulder: 5,
-  rightShoulder: 6,
-  leftElbow: 7,
-  rightElbow: 8,
-  leftWrist: 9,
-  rightWrist: 10,
-  leftHip: 11,
-  rightHip: 12,
-  leftKnee: 13,
-  rightKnee: 14,
-  leftAnkle: 15,
-  rightAnkle: 16,
-};
-
 const arr: Array<string> = [...partSet];
 const initialValues: Array<number> = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 const anglesHistory: any = {};
@@ -50,12 +30,10 @@ const getAverage = (angleElement: string) => {
 };
 
 export default function Model(props: any) {
-  const { pose, angles, setAngles } = props;
+  const { angles } = props;
 
   const group = useRef<any>();
-  const { nodes, materials, animations, scene } = useGLTF(
-    "/low_poly_humanoid_robot.glb"
-  ) as any;
+  const { nodes, materials } = useGLTF("/low_poly_humanoid_robot.glb") as any;
 
   updateAngles(angles);
   const skeleton = nodes?.Object_7?.skeleton;

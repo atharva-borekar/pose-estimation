@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 // import Scene from "./components/Scene";
-import { Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import PoseEstimationComponent from "./components/PoseEstimation";
 import Scene from "./components/Scene";
 
@@ -12,12 +12,16 @@ function App() {
   return (
     <div className="App">
       <Row className="d-flex flex-1">
-        <PoseEstimationComponent
-          pose={pose}
-          setPose={setPose}
-          setAngles={setAngles}
-        />
-        <Scene pose={pose} setPose={setPose} angles={angles} />
+        <Col>
+          <Scene pose={pose} setPose={setPose} angles={angles} />
+        </Col>
+        <Col>
+          <PoseEstimationComponent
+            pose={pose}
+            setPose={setPose}
+            setAngles={setAngles}
+          />
+        </Col>
       </Row>
     </div>
   );
