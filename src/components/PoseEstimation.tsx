@@ -23,7 +23,12 @@ partSet.add("right_hip-right_knee-right_ankle");
 
 partSet.add("left_elbow-left_wrist-left_index");
 partSet.add("right_elbow-right_wrist-right_index");
+
+partSet.add("pelvis");
 export { partSet };
+
+const getDirectAngle = (start: any, end: any) =>
+  (Math.atan2(start?.y - end?.y, start?.x - end?.x) * 180) / Math.PI;
 
 const partIndexes = Object.keys(partIndices);
 function getAngles(pose: any) {
@@ -47,6 +52,12 @@ function getAngles(pose: any) {
         }
       }
     }
+  }
+  if (partSet.has("pelvis")) {
+    const leftHipPose = pose?.keypoints?.[23];
+    const rightHipPose = pose?.keypoints?.[24];
+
+    angles["pelvis"] = getDirectAngle(leftHipPose, rightHipPose);
   }
 
   return angles;
