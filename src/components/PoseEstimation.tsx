@@ -9,24 +9,33 @@ import "./poseEstimation.scss";
 tf.setBackend("webgl");
 
 let partSet = new Set<string>();
-partSet.add("left_shoulder-left_elbow-left_wrist");
-partSet.add("right_shoulder-left_shoulder-left_elbow");
+// partSet.add("left_shoulder-left_elbow-left_wrist");
+// partSet.add("right_shoulder-left_shoulder-left_elbow");
 
-partSet.add("right_shoulder-right_elbow-right_wrist");
-partSet.add("left_shoulder-right_shoulder-right_elbow");
+// partSet.add("right_shoulder-right_elbow-right_wrist");
+// partSet.add("left_shoulder-right_shoulder-right_elbow");
 
-partSet.add("left_shoulder-left_hip-left_knee");
-partSet.add("right_shoulder-right_hip-right_knee");
+// partSet.add("left_shoulder-left_hip-left_knee");
+// partSet.add("right_shoulder-right_hip-right_knee");
 
-partSet.add("left_hip-left_knee-left_ankle");
-partSet.add("right_hip-right_knee-right_ankle");
+// partSet.add("left_hip-left_knee-left_ankle");
+// partSet.add("right_hip-right_knee-right_ankle");
 
-partSet.add("left_elbow-left_wrist-left_index");
-partSet.add("right_elbow-right_wrist-right_index");
+// partSet.add("left_elbow-left_wrist-left_index");
+// partSet.add("right_elbow-right_wrist-right_index");
 
-partSet.add("pelvis-xy");
-partSet.add("pelvis-yz");
-partSet.add("pelvis-zx");
+// partSet.add("pelvis-xy");
+// partSet.add("pelvis-yz");
+// partSet.add("pelvis-zx");
+
+partSet.add("left_shoulder-x");
+partSet.add("left_shoulder-y");
+partSet.add("left_shoulder-z");
+
+partSet.add("left_elbow-x");
+partSet.add("left_elbow-y");
+partSet.add("left_elbow-z");
+
 export { partSet };
 
 const getDirectAngle = (
@@ -42,36 +51,96 @@ const getDirectAngle = (
     180) /
   Math.PI;
 
+function degrees(radians: number) {
+  return (radians * 180) / Math.PI;
+}
+function getAngleAtoB(A: any, B: any) {
+  const directionVector = {
+    x: B.x - A.x,
+    y: B.y - A.y,
+    z: B.z - A.z,
+  };
+
+  const x = Math.atan2(directionVector.y, directionVector.x);
+  const y = Math.atan2(
+    directionVector.z,
+    Math.sqrt(
+      directionVector.x * directionVector.x +
+        directionVector.y * directionVector.y
+    )
+  );
+  const z = Math.atan2(-directionVector.y, directionVector.x);
+
+  return {
+    x: degrees(x),
+    y: degrees(y),
+    z: degrees(z),
+  };
+}
+
 const partIndexes = Object.keys(partIndices);
+
 function getAngles(pose: any) {
   const keypoints = pose.keypoints;
+  const keypoints3D = pose.keypoints3D;
   const angles: any = {};
 
-  for (let i = 0; i < keypoints.length; i++) {
-    for (let j = 0; j < keypoints.length; j++) {
-      for (let k = 0; k < keypoints.length; k++) {
-        if (
-          partSet.has(
-            partIndexes[i] + "-" + partIndexes[j] + "-" + partIndexes[k]
-          )
-        ) {
-          const a = keypoints[i];
-          const b = keypoints[j];
-          const c = keypoints[k];
+  // for (let i = 0; i < keypoints.length; i++) {
+  //   for (let j = 0; j < keypoints.length; j++) {
+  //     for (let k = 0; k < keypoints.length; k++) {
+  //       if (
+  //         partSet.has(
+  //           partIndexes[i] + "-" + partIndexes[j] + "-" + partIndexes[k]
+  //         )
+  //       ) {
+  //         const a = keypoints[i];
+  //         const b = keypoints[j];
+  //         const c = keypoints[k];
 
-          angles[`${partIndexes[i]}-${partIndexes[j]}-${partIndexes[k]}`] =
-            angleBetweenLines(a?.x, a?.y, b?.x, b?.y, c?.x, c?.y);
-        }
-      }
-    }
+  //         angles[`${partIndexes[i]}-${partIndexes[j]}-${partIndexes[k]}`] =
+  //           angleBetweenLines(a?.x, a?.y, b?.x, b?.y, c?.x, c?.y);
+  //       }
+  //     }
+  //   }
+  // }
+  // if (
+  //   partSet.has("pelvis-xy") &&
+  //   partSet.has("pelvis-yz") &&
+  //   partSet.has("pelvis-zx")
+  // ) {
+  //   const leftShoulder = keypoints3D?.[partIndices.left_shoulder];
+  //   const rightShoulder = keypoints3D?.[partIndices.right_shoulder];
+  //   angles["pelvis-xy"] = getDirectAngle(leftShoulder, rightShoulder, "x", "y");
+  //   angles["pelvis-yz"] = getDirectAngle(leftShoulder, rightShoulder, "y", "z");
+  //   angles["pelvis-zx"] = getDirectAngle(leftShoulder, rightShoulder, "z", "x");
+  // }
+  if (
+    partSet.has("left_shoulder-x") &&
+    partSet.has("left_shoulder-y") &&
+    partSet.has("left_shoulder-z")
+  ) {
+    const leftShoulder = keypoints3D?.[partIndices.left_shoulder];
+    const leftElbow = keypoints3D?.[partIndices.left_elbow];
+
+    const generatedAngle = getAngleAtoB(leftShoulder, leftElbow);
+    console.log({ generatedAngle });
+    angles["left_shoulder-x"] = generatedAngle?.x;
+    angles["left_shoulder-y"] = generatedAngle?.y;
+    angles["left_shoulder-z"] = generatedAngle?.z;
   }
-  if (partSet.has("pelvis-xy")) {
-    const leftShoulder = pose?.keypoints3D?.[11];
-    const rightShoulder = pose?.keypoints3D?.[12];
 
-    angles["pelvis-xy"] = getDirectAngle(leftShoulder, rightShoulder, "x", "y");
-    angles["pelvis-yz"] = getDirectAngle(leftShoulder, rightShoulder, "y", "z");
-    angles["pelvis-zx"] = getDirectAngle(leftShoulder, rightShoulder, "z", "x");
+  if (
+    partSet.has("left_elbow-x") &&
+    partSet.has("left_elbow-y") &&
+    partSet.has("left_elbow-z")
+  ) {
+    const leftElbow = keypoints3D?.[partIndices.left_elbow];
+    const leftWrist = keypoints3D?.[partIndices.left_wrist];
+
+    const generatedAngle = getAngleAtoB(leftElbow, leftWrist);
+    angles["left_elbow-x"] = generatedAngle?.x;
+    angles["left_elbow-y"] = generatedAngle?.y;
+    angles["left_elbow-z"] = generatedAngle?.z;
   }
 
   return angles;

@@ -38,7 +38,7 @@ export default function Model(props: any) {
   updateAngles(angles);
   const skeleton = nodes?.Object_7?.skeleton;
   const bones = skeleton?.bones;
-  console.log({ bones, pose });
+  // console.log({ bones, pose });
   const leftUpperArm = bones?.[9];
   const leftElbow = bones?.[10];
   const rightUpperArm = bones?.[19];
@@ -54,12 +54,17 @@ export default function Model(props: any) {
   const pelvis = bones?.[3];
 
   useFrame((state, delta) => {
-    // if (leftUpperArm) {
-    //   leftUpperArm.rotation.y =
-    //     ((-getAverage("right_shoulder-left_shoulder-left_elbow") + 180) *
-    //       Math.PI) /
-    //     180;
-    // }
+    if (leftUpperArm) {
+      leftUpperArm.rotation.y = (getAverage("left_shoulder-x") * Math.PI) / 180;
+      leftUpperArm.rotation.z = (getAverage("left_shoulder-y") * Math.PI) / 180;
+    }
+    if (leftElbow) {
+      leftElbow.rotation.y =
+        ((getAverage("left_elbow-x") - getAverage("left_shoulder-x")) *
+          Math.PI) /
+        180;
+      // leftElbow.rotation.z = (getAverage("left_elbow-y") * Math.PI) / 180;
+    }
     // if (leftElbow) {
     //   leftElbow.rotation.y =
     //     ((-getAverage("left_shoulder-left_elbow-left_wrist") + 180) * Math.PI) /
@@ -106,12 +111,12 @@ export default function Model(props: any) {
     //     ((getAverage("right_elbow-right_wrist-right_index") + 180) * Math.PI) /
     //     180;
     // }
-    if (pelvis) {
-      console.log({ angle: getAverage("pelvis-yz") });
-      pelvis.rotation.y = ((getAverage("pelvis-xy") - 90) * Math.PI) / 180;
-      pelvis.rotation.x = (getAverage("pelvis-zx") * Math.PI) / 180;
-      // pelvis.rotation.z = (getAverage("pelvis-yz") * Math.PI) / 180;
-    }
+    // if (pelvis) {
+    //   console.log({ angle: getAverage("pelvis-yz") });
+    //   pelvis.rotation.y = ((getAverage("pelvis-xy") - 90) * Math.PI) / 180;
+    //   pelvis.rotation.x = (getAverage("pelvis-zx") * Math.PI) / 180;
+    //   // pelvis.rotation.z = (getAverage("pelvis-yz") * Math.PI) / 180;
+    // }
   });
 
   return (
