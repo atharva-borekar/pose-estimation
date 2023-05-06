@@ -101,8 +101,8 @@ export default function Model(props: any) {
       pelvis.rotation.y = ((getAverage("pelvis-xy") - 90) * Math.PI) / 180;
       pelvis.rotation.x = (getAverage("pelvis-zx") * Math.PI) / 180;
       if (
-        ((getAverage("pelvis-xy") - 90) * Math.PI) / 180 > 0.25 ||
-        ((getAverage("pelvis-xy") - 90) * Math.PI) / 180 < -0.25
+        ((getAverage("pelvis-xy") - 90) * Math.PI) / 180 < 0.25 ||
+        ((getAverage("pelvis-xy") - 90) * Math.PI) / 180 > -0.25
       ) {
         leftThigh.rotation.y = -0.25;
         rightThigh.rotation.y = 0.1;
