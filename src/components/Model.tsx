@@ -38,7 +38,7 @@ export default function Model(props: any) {
   updateAngles(angles);
   const skeleton = nodes?.Object_7?.skeleton;
   const bones = skeleton?.bones;
-  console.log({ bones, pose });
+  // console.log({ bones, pose });
   const leftUpperArm = bones?.[9];
   const leftElbow = bones?.[10];
   const rightUpperArm = bones?.[19];
@@ -54,63 +54,59 @@ export default function Model(props: any) {
   const pelvis = bones?.[3];
 
   useFrame((state, delta) => {
-    // if (leftUpperArm) {
-    //   leftUpperArm.rotation.y =
-    //     ((-getAverage("right_shoulder-left_shoulder-left_elbow") + 180) *
-    //       Math.PI) /
-    //     180;
-    // }
-    // if (leftElbow) {
-    //   leftElbow.rotation.y =
-    //     ((-getAverage("left_shoulder-left_elbow-left_wrist") + 180) * Math.PI) /
-    //     180;
-    // }
-    // if (rightUpperArm) {
-    //   rightUpperArm.rotation.y =
-    //     ((-getAverage("left_shoulder-right_shoulder-right_elbow") + 180) *
-    //       Math.PI) /
-    //     180;
-    // }
-    // if (rightElbow) {
-    //   rightElbow.rotation.y =
-    //     ((-getAverage("right_shoulder-right_elbow-right_wrist") + 180) *
-    //       Math.PI) /
-    //     180;
-    // }
-    // if (leftThigh) {
-    //   leftThigh.rotation.y =
-    //     ((-getAverage("left_shoulder-left_hip-left_knee") + 180) * Math.PI) /
-    //     180;
-    // }
-    // if (rightThigh) {
-    //   rightThigh.rotation.y =
-    //     ((-getAverage("right_shoulder-right_hip-right_knee") + 180) * Math.PI) /
-    //     180;
-    // }
-    // if (leftCalf) {
-    //   leftCalf.rotation.y =
-    //     ((getAverage("left_hip-left_knee-left_ankle") + 180) * Math.PI) / 180;
-    // }
-    // if (rightCalf) {
-    //   rightCalf.rotation.y =
-    //     ((getAverage("right_hip-right_knee-right_ankle") + 180) * Math.PI) /
-    //     180;
-    // }
-    // if (leftHand) {
-    //   leftHand.rotation.z =
-    //     (-(getAverage("left_elbow-left_wrist-left_index") + 180) * Math.PI) /
-    //     180;
-    // }
-    // if (rightHand) {
-    //   rightHand.rotation.z =
-    //     ((getAverage("right_elbow-right_wrist-right_index") + 180) * Math.PI) /
-    //     180;
-    // }
+    if (leftUpperArm) {
+      leftUpperArm.rotation.y =
+        ((-getAverage("right_shoulder-left_shoulder-left_elbow") + 180) *
+          Math.PI) /
+        180;
+    }
+    if (leftElbow) {
+      leftElbow.rotation.y =
+        ((-getAverage("left_shoulder-left_elbow-left_wrist") + 180) * Math.PI) /
+        180;
+    }
+    if (rightUpperArm) {
+      rightUpperArm.rotation.y =
+        ((-getAverage("left_shoulder-right_shoulder-right_elbow") + 180) *
+          Math.PI) /
+        180;
+    }
+    if (rightElbow) {
+      rightElbow.rotation.y =
+        ((-getAverage("right_shoulder-right_elbow-right_wrist") + 180) *
+          Math.PI) /
+        180;
+    }
+    if (leftThigh) {
+      leftThigh.rotation.y =
+        ((-getAverage("left_shoulder-left_hip-left_knee") + 180) * Math.PI) /
+        180;
+    }
+    if (rightThigh) {
+      rightThigh.rotation.y =
+        ((-getAverage("right_shoulder-right_hip-right_knee") + 180) * Math.PI) /
+        180;
+    }
+    if (leftCalf) {
+      leftCalf.rotation.y =
+        ((getAverage("left_hip-left_knee-left_ankle") + 180) * Math.PI) / 180;
+    }
+    if (rightCalf) {
+      rightCalf.rotation.y =
+        ((getAverage("right_hip-right_knee-right_ankle") + 180) * Math.PI) /
+        180;
+    }
+
     if (pelvis) {
-      console.log({ angle: getAverage("pelvis-yz") });
       pelvis.rotation.y = ((getAverage("pelvis-xy") - 90) * Math.PI) / 180;
       pelvis.rotation.x = (getAverage("pelvis-zx") * Math.PI) / 180;
-      // pelvis.rotation.z = (getAverage("pelvis-yz") * Math.PI) / 180;
+      if (
+        ((getAverage("pelvis-xy") - 90) * Math.PI) / 180 > 0.25 ||
+        ((getAverage("pelvis-xy") - 90) * Math.PI) / 180 < -0.25
+      ) {
+        leftThigh.rotation.y = -0.25;
+        rightThigh.rotation.y = 0.1;
+      }
     }
   });
 
