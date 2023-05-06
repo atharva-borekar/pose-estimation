@@ -30,7 +30,7 @@ const getAverage = (angleElement: string) => {
 };
 
 export default function Model(props: any) {
-  const { angles, pose } = props;
+  const { angles } = props;
 
   const group = useRef<any>();
   const { nodes, materials } = useGLTF("/low_poly_humanoid_robot.glb") as any;
@@ -38,7 +38,7 @@ export default function Model(props: any) {
   updateAngles(angles);
   const skeleton = nodes?.Object_7?.skeleton;
   const bones = skeleton?.bones;
-  // console.log({ bones, pose });
+
   const leftUpperArm = bones?.[9];
   const leftElbow = bones?.[10];
   const rightUpperArm = bones?.[19];
@@ -49,8 +49,6 @@ export default function Model(props: any) {
 
   const leftCalf = bones?.[29];
   const rightCalf = bones?.[34];
-  const leftHand = bones?.[11];
-  const rightHand = bones?.[21];
   const pelvis = bones?.[3];
 
   useFrame((state, delta) => {
@@ -99,12 +97,12 @@ export default function Model(props: any) {
 
     if (pelvis) {
       pelvis.rotation.y = ((getAverage("pelvis-xy") - 90) * Math.PI) / 180;
-      pelvis.rotation.x = (getAverage("pelvis-zx") * Math.PI) / 180;
+      // pelvis.rotation.x = (getAverage("pelvis-zx") * Math.PI) / 180;
       if (
-        ((getAverage("pelvis-xy") - 90) * Math.PI) / 180 < 0.25 ||
-        ((getAverage("pelvis-xy") - 90) * Math.PI) / 180 > -0.25
+        ((getAverage("pelvis-xy") - 90) * Math.PI) / 180 > 0.25 ||
+        ((getAverage("pelvis-xy") - 90) * Math.PI) / 180 < -0.25
       ) {
-        leftThigh.rotation.y = -0.25;
+        leftThigh.rotation.y = -0.1;
         rightThigh.rotation.y = 0.1;
       }
     }
