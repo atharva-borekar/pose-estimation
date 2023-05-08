@@ -51,7 +51,17 @@ export default function Model(props: any) {
   const rightCalf = bones?.[34];
   const pelvis = bones?.[3];
 
+  const head = bones?.[5];
+  const leftHand = bones?.[11];
+  const rightHand = bones?.[21];
+
   useFrame((state, delta) => {
+    if (leftHand) {
+      leftHand.rotation.x = Math.PI;
+    }
+    if (rightHand) {
+      rightHand.rotation.x = Math.PI;
+    }
     if (leftUpperArm) {
       leftUpperArm.rotation.y =
         ((-getAverage("right_shoulder-left_shoulder-left_elbow") + 180) *
@@ -105,6 +115,9 @@ export default function Model(props: any) {
         leftThigh.rotation.y = -0.1;
         rightThigh.rotation.y = 0.1;
       }
+    }
+    if (head) {
+      head.rotation.y = ((getAverage("pelvis-xy") - 90) * Math.PI) / 180;
     }
   });
 

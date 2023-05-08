@@ -27,6 +27,10 @@ partSet.add("right_elbow-right_wrist-right_index");
 partSet.add("pelvis-xy");
 partSet.add("pelvis-yz");
 partSet.add("pelvis-zx");
+
+partSet.add("head-xy");
+partSet.add("head-yz");
+partSet.add("head-zx");
 export { partSet };
 
 const getDirectAngle = (
@@ -66,12 +70,20 @@ function getAngles(pose: any) {
     }
   }
   if (partSet.has("pelvis-xy")) {
-    const leftShoulder = pose?.keypoints3D?.[11];
-    const rightShoulder = pose?.keypoints3D?.[12];
+    const leftShoulder = pose?.keypoints3D?.[7];
+    const rightShoulder = pose?.keypoints3D?.[8];
 
     angles["pelvis-xy"] = getDirectAngle(leftShoulder, rightShoulder, "x", "y");
     angles["pelvis-yz"] = getDirectAngle(leftShoulder, rightShoulder, "y", "z");
     angles["pelvis-zx"] = getDirectAngle(leftShoulder, rightShoulder, "z", "x");
+  }
+  if (partSet.has("head-xy")) {
+    const leftEar = pose?.keypoints3D?.[11];
+    const rightEar = pose?.keypoints3D?.[12];
+
+    angles["head-xy"] = getDirectAngle(leftEar, rightEar, "x", "y");
+    angles["head-yz"] = getDirectAngle(leftEar, rightEar, "y", "z");
+    angles["head-zx"] = getDirectAngle(leftEar, rightEar, "z", "x");
   }
 
   return angles;
