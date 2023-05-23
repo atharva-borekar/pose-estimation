@@ -1,6 +1,7 @@
 import { useGLTF } from "@react-three/drei";
+import { useBox } from "@react-three/cannon";
 import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { memo, useRef } from "react";
 import { partSet } from "./PoseEstimation";
 
 const arr: Array<string> = [...partSet];
@@ -29,10 +30,10 @@ const getAverage = (angleElement: string) => {
   return avg;
 };
 
-export default function Model(props: any) {
+const Model = (props: any) => {
+  const [ref] = useBox(() => ({ mass: 10, position: [0, 5, 0], ...props }));
   const { angles } = props;
 
-  const group = useRef<any>();
   const { nodes, materials } = useGLTF("/low_poly_humanoid_robot.glb") as any;
 
   updateAngles(angles);
@@ -104,7 +105,6 @@ export default function Model(props: any) {
         ((getAverage("right_hip-right_knee-right_ankle") + 180) * Math.PI) /
         180;
     }
-
     if (pelvis) {
       pelvis.rotation.y = ((getAverage("pelvis-xy") - 90) * Math.PI) / 180;
       // pelvis.rotation.x = (getAverage("pelvis-zx") * Math.PI) / 180;
@@ -122,7 +122,7 @@ export default function Model(props: any) {
   });
 
   return (
-    <group ref={group} {...props} dispose={null} position={[0, -5, 0]}>
+    <group ref={ref} {...props} dispose={null} position={[0, 0, 0]}>
       <group name="Sketchfab_Scene">
         <group name="Sketchfab_model" rotation={[-Math.PI / 2, 0, 0]}>
           <group
@@ -145,4 +145,6 @@ export default function Model(props: any) {
       </group>
     </group>
   );
-}
+};
+
+export default memo(Model);

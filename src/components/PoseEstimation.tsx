@@ -1,7 +1,7 @@
 import * as poseDetection from "@tensorflow-models/pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
 import * as tf from "@tensorflow/tfjs-core";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import Webcam from "react-webcam";
 import { partIndices } from "../constants";
 import "./poseEstimation.scss";
@@ -240,4 +240,4 @@ const PoseEstimationComponent = (props: any) => {
   );
 };
 
-export default PoseEstimationComponent;
+export default memo(PoseEstimationComponent);

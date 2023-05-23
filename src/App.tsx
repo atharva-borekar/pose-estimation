@@ -4,6 +4,7 @@ import "./App.css";
 import { Col, Row } from "react-bootstrap";
 import PoseEstimationComponent from "./components/PoseEstimation";
 import Scene from "./components/Scene";
+import HandPoseEstimation from "./components/HandPoseEstimation";
 
 function App() {
   const [pose, setPose] = useState<any>(null);
@@ -16,7 +17,12 @@ function App() {
           <Scene pose={pose} setPose={setPose} angles={angles} />
         </Col>
         <Col>
-          <PoseEstimationComponent
+          {/* <PoseEstimationComponent
+            pose={pose}
+            setPose={setPose}
+            setAngles={setAngles}
+          /> */}
+          <HandPoseEstimation
             pose={pose}
             setPose={setPose}
             setAngles={setAngles}
