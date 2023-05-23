@@ -5,6 +5,7 @@
   "dependencies": {
     "@babylonjs/core": "^6.2.0",
     "@babylonjs/loaders": "^6.2.0",
+    "@mediapipe/pose": "^0.5.1675469404",
     "@react-three/drei": "^9.66.2",
     "@react-three/fiber": "^8.13.0",
     "@tensorflow-models/pose-detection": "^2.1.0",
